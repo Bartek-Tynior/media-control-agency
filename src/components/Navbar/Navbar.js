@@ -28,7 +28,7 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="navbar_container flex justify-between">
+    <nav className="navbar_container w-full fixed flex justify-between px-6 py-4">
         <div className="navbar_logo flex">
           <h1 className="text-2xl font-bold tracking-tight leading-5 text-white">
             <span>
