@@ -1,6 +1,6 @@
 import { gsap } from "gsap";
 import ScrollTrigger from "gsap/dist/ScrollTrigger";
-import { useEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 
 gsap.registerPlugin(ScrollTrigger)
@@ -9,14 +9,17 @@ const Services = () => {
 
   const services = [
     {
+      i: 1,
       title: 'Architecto aliquam', 
       description: 'Lorem, ipsum dolor sit amet consectetur adipisicing elit. At, ea.'
     },
     {
+      i: 2,
       title: 'Ceritatis placeat', 
       description: 'Dignissimos placeat cupiditate perferendis eaque praesentium similique officia dolore?'
     },
     {
+      i: 3,
       title: 'Vitae voluptates', 
       description: 'In ullam et nulla repudiandae praesentium, laboriosam quas tempore fuga asperiores eveniet amet.'
     }
@@ -24,43 +27,38 @@ const Services = () => {
 
   const container = useRef(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
 
     const element = container.current;
 
-    gsap.utils.toArray(element.querySelector(".panel")).forEach((panel, i) => {
-
-      let tween = gsap.to(panel, {
-
-        trigger: element
+    if(element){
+      const targetsEndTrigger = gsap.utils.toArray(element.querySelectorAll(".panel"));
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: targetsEndTrigger,
+          pin: true,
+          scrub: true,
+          start: 'top top',
+          end: '+=' + (targetsEndTrigger.length * (element.clientHeight/3))        
+        }
       });
-  
-
-      var tl = gsap.timeline({
-      scrollTrigger: {
-        animation: tween,
-        trigger: element,
-        start: () => "top -" + (window.innerHeight*(i+0.2)),
-        end: () => "+=" + window.innerHeight,
-        scrub: true,
-        toggleActions: "play none reverse none",
-        invalidateOnRefresh: true,     
-        markers: true,
-      }
-      
-    })
-
-    tl.to(panel, {height: 0})
+      targetsEndTrigger.forEach((image, index) => {
+        tl.fromTo(image, { y: 0, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .5, delay: index === 0 ? 0 : -.4 });
+        if(index ==! targetsEndTrigger.length - 1){
+          tl.to(image, { duration: .3, autoAlpha: 0 });
+        }
+      })
     
-  });  
+      console.log(tl.scrollTrigger) 
+    }
 
-  }, []);
+  });
 
   return (
     <section ref={container} className="text-white items-center overflow-hidden">
         {
-          services.map(({title, description}) => (
-            <div className={"panel flex flex-col h-screen items-center justify-center"} key={title}>
+          services.map(({title, description, i}) => (
+            <div className={"panel flex flex-col h-screen items-center justify-center"} id={"card"+i} key={title}>
               <div className="flex justify-center">
               <div className="flex flex-col justify-center p-6 text-center lg:text-left w-1/2">
                 <h1 className="text-6xl font-bold pb-5">{title}</h1>
