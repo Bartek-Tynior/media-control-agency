@@ -29,28 +29,30 @@ const Services = () => {
 
   useLayoutEffect(() => {
 
-    const element = container.current;
+    let ctx = gsap.context(() => {
 
-    if(element){
-      const targetsEndTrigger = gsap.utils.toArray(element.querySelectorAll(".panel"));
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: targetsEndTrigger,
-          pin: true,
-          scrub: true,
-          start: 'top top',
-          end: '+=' + (targetsEndTrigger.length * (element.clientHeight/3))        
-        }
+      gsap.utils.toArray(".panel").forEach((panel, i) => {
+
+        const tl = gsap.timeline()
+        tl.from(panel, {opacity: 0, duration: 1000});
+        tl.to(panel, {opacity: 1, duration: 1000});
+        tl.to(panel, {opacity: 0, duration: 1000});
+
+        ScrollTrigger.create({
+          animation: tl,
+          trigger: panel,
+          start: "top top", 
+          pin: true, 
+          pinSpacing: false,
+          scrub: true
+        });
       });
-      targetsEndTrigger.forEach((image, index) => {
-        tl.fromTo(image, { y: 0, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: .5, delay: index === 0 ? 0 : -.4 });
-        if(index ==! targetsEndTrigger.length - 1){
-          tl.to(image, { duration: .3, autoAlpha: 0 });
-        }
-      })
-    
-      console.log(tl.scrollTrigger) 
-    }
+      
+
+
+    })
+
+    return () => ctx.revert();
 
   });
 
